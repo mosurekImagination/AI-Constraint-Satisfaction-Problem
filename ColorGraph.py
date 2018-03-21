@@ -9,39 +9,39 @@ class ColorGraph(CSP):
         self.graph = np.zeros((self.size, self.size), dtype=int)
         self.domain = initDomainSize
         self.minOdds = minOdds
-        self.variableList = self.generateVariableList()
 
-    def generateVariableList(self):
-        list = []
-        for i in range (0,self.size):
-            for j in range (0,self.size):
-                list.append((i,j))
+    def generateVariableList(self, heurestic):
+        list=[]
+        if heurestic == CSP.VariableHeurestic.TAKE_FIRST:
+            for i in range (0,self.size):
+                for j in range (0,self.size):
+                    list.append((i,j))
         return list
 
-    def initialiseProblem(self):
-        accElem = 0
-        while(accElem < len(self.variableList)):
-          #  print(self.graph)
-            if accElem == -1:
-                self.domain += 1
-                accElem = 0
-                #print("Domain raised to: {}".format(self.domain))
-                continue
-            if self.getValueElem(accElem) > self.domain:
-                self.clearElem(accElem)
-                accElem-=1
-                #print("Element cross Domain: ")
-                continue
-
-            self.increaseElem(accElem)
-            if self.checkConstraints(accElem) :
-                accElem+=1
-                continue
-            else:
-                continue
+    # def initialiseProblem(self, firstVariableHeurestic = CSP.SolveHeurestic.TAKE_FIRST):
+    #     accElem = 0
+    #     while(accElem < len(self.variableList)):
+    #         print(self.graph)
+    #         if accElem == -1:
+    #             self.increaseDomain()
+    #             accElem = 0
+    #             #print("Domain raised to: {}".format(self.domain))
+    #             continue
+    #         if self.getValueElem(accElem) > self.domain:
+    #             self.clearElem(accElem)
+    #             accElem-=1
+    #             #print("Element cross Domain: ")
+    #             continue
+    #
+    #         self.increaseElem(accElem)
+    #         if self.checkConstraints(accElem) :
+    #             accElem+=1
+    #             continue
 
 
 
+    def increaseDomain(self):
+        self.domain+= 1
 
     def getValueElem(self, accElem):
         elem = self.variableList[accElem]
@@ -97,7 +97,16 @@ class ColorGraph(CSP):
             return False
 
         return correct
-        
+
+    def initialiseDomains(self, heurestic):
+        if heurestic == self.SolveHeurestic.BACK_TRACKING:
+            self.domain = 0
+        if heurestic == self.SolveHeurestic.FORWARD_TRACKING:
+            self.domainList = np.range(self.size)
+            for i in range(0, self.size):
+                self.domainList[i] = np.range(self.size)
+                for j in range (0,self.size):
+                    self.domainList[i][j] = (np.arange(1, self.domain))
 
 
 
