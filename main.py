@@ -1,7 +1,8 @@
 from ColorGraph import ColorGraph
 from CSP import CSP
 
-graphCSP = ColorGraph(3)
-graphCSP.initialiseProblem(CSP.Heurestic.TAKE_FIRST)
+graphCSP = ColorGraph(size=4, initDomainSize=5)
+graphCSP.initialiseProblem()
+graphCSP.solveProblem()
+print("Solved CSP graph:")
 print(graphCSP.graph)
-print(graphCSP.variableList)

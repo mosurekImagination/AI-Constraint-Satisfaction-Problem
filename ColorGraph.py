@@ -18,21 +18,19 @@ class ColorGraph(CSP):
                 list.append((i,j))
         return list
 
-    def initialiseProblem(self, heurestic = CSP.Heurestic.TAKE_FIRST):
-        # if(heurestic == CSP.Heurestic.TAKE_FIRST):
+    def initialiseProblem(self):
         accElem = 0
-        dom = self.domain
-        asdf = self.graph
         while(accElem < len(self.variableList)):
+          #  print(self.graph)
             if accElem == -1:
                 self.domain += 1
                 accElem = 0
-                print("Domain raised to: {}".format(self.domain))
+                #print("Domain raised to: {}".format(self.domain))
                 continue
             if self.getValueElem(accElem) > self.domain:
                 self.clearElem(accElem)
                 accElem-=1
-                #print("Element cross Domain: {}".format(accElem+1))
+                #print("Element cross Domain: ")
                 continue
 
             self.increaseElem(accElem)
@@ -40,12 +38,9 @@ class ColorGraph(CSP):
                 accElem+=1
                 continue
             else:
-                self.clearElem(accElem)
-                accElem-=1
+                continue
 
-            #print("Actual elem: {}".format(accElem))
-            #print("Graph:")
-            #print(self.graph)
+
 
 
     def getValueElem(self, accElem):
