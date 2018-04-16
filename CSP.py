@@ -78,6 +78,7 @@ class CSP:
         if solveHeurestic == self.SolveHeurestic.FORWARD_TRACKING:
             self.initialiseDomains(solveHeurestic)
             self.getNextFromDomain(0)
+            self.deleteFromNeighbourDomains(0)
             while(accElem != -1):
                 print(self.graph)
                 if accElem == len(self.variableList):
@@ -94,7 +95,9 @@ class CSP:
                         self.getNextFromDomain(accElem)
                         self.deleteFromNeighbourDomains(accElem)
                 else:
-                    self.getNextFromDomain(accElem)
+                    print("Koniec domeny")
+                    print(self.graph)
+                    accElem-=1
 
         self.endTime = tlib.time()
 
@@ -107,8 +110,9 @@ class CSP:
     def checkDomainsNotEmpty(self):
         notEmpty = True
         for i in range(0, len(self.domainList)-1):
-            if len(self.domainList[i]) == 0:
-                return False
+            for j in range(0, len(self.domainList)-1):
+                if len(self.domainList[i][j]) == 0:
+                    return False
         return notEmpty
 
     def getExecutionTime(self):
