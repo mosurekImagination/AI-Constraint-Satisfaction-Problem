@@ -10,6 +10,7 @@ class ColorGraph(CSP):
         self.domain = initDomainSize
         self.minOdds = minOdds
         self.results = []
+        self.bannedElems = np.zeros(self.size)
 
     def generateVariableList(self, heurestic):
         list=[]
@@ -106,19 +107,19 @@ class ColorGraph(CSP):
         value = self.graph[x][y]
 
         ## Bezposredni Sasiedzi
-        self.deleteBannedValue(x-1, y, (value, value+1, value-1))
-        self.deleteBannedValue(x+1, y, (value, value+1, value-1))
-        self.deleteBannedValue(x, y-1, (value, value+1, value-1))
-        self.deleteBannedValue(x, y+1, (value, value+1, value-1))
+        self.deleteBannedValue(x-1, y, (value, value+1, value-1), elem)
+        self.deleteBannedValue(x+1, y, (value, value+1, value-1), elem)
+        self.deleteBannedValue(x, y-1, (value, value+1, value-1), elem)
+        self.deleteBannedValue(x, y+1, (value, value+1, value-1), elem)
 
         #Skos
-        self.deleteBannedValue(x+1, y+1, (value,))
-        self.deleteBannedValue(x-1, y+1, (value,))
-        self.deleteBannedValue(x+1, y-1, (value,))
-        self.deleteBannedValue(x-1, y-1, (value,))
+        self.deleteBannedValue(x+1, y+1, (value,), elem)
+        self.deleteBannedValue(x-1, y+1, (value,), elem)
+        self.deleteBannedValue(x+1, y-1, (value,), elem)
+        self.deleteBannedValue(x-1, y-1, (value,), elem)
 
 
-    def deleteBannedValue(self,x,y,value):
+    def deleteBannedValue(self,x,y,value, elem):
         if (x >= 0 and y >= 0 and x < self.size and y < self.size):
             for i in range (0,len(value)):
                 #print(x,"y:",y)
@@ -138,6 +139,9 @@ class ColorGraph(CSP):
         self.getDomain(elem).push(value)
 
     def getNextFromDomain(self, elem):
+        if(self.isLastInDomain(elem)):
+           self.setElemValue(elem, CSP.CHECKED)
+
         value = self.getValueElem(elem)
         domain = self.getDomain(elem)
         if (value == 0 ):
@@ -145,14 +149,45 @@ class ColorGraph(CSP):
         if (len(domain) == 0):
             test = 1
 
-        index = np.where(self.domain == value)[0]
+        index = np.where(domain == value)[0]
         if (len(index) != 0):
         #index = np.nonzero(domain == self.getValueElem(elem))[0][0]
-            self.setElemValue(elem, domain[index[0]])
+            self.setElemValue(elem, domain[index[0]+1])
 
     def setElemValue(self, accElem, value):
         elem = self.variableList[accElem]
         self.graph[elem[0]][elem[1]] = value
+
+    def restoreFromNeighbourDomain(self, elem):
+        x, y = self.variableList[elem]
+        value = self.graph[x][y]
+
+        ## Bezposredni Sasiedzi
+        self.restoreBannedValue(x - 1, y, (value,))
+        self.restoreBannedValue(x + 1, y, (value,))
+        self.restoreBannedValue(x, y - 1, (value,))
+        self.restoreBannedValue(x, y + 1, (value,))
+
+        # Skos
+        self.restoreBannedValue(x + 1, y + 1, (value,))
+        self.restoreBannedValue(x - 1, y + 1, (value,))
+        self.restoreBannedValue(x + 1, y - 1, (value,))
+        self.restoreBannedValue(x - 1, y - 1, (value,))
+
+    def restoreBannedValue(self, x, y, value):
+        if (x >= 0 and y >= 0 and x < self.size and y < self.size):
+            for i in range (0,len(value)):
+                self.domainList[x][y] = np.append(self.domainList[x][y],value[i])
+                self.che
+
+    def isLastInDomain(self, elem):
+        value = self.getValueElem(elem)
+        domain = self.getDomain(elem)
+        return np.where(domain == value)[0] == len(domain)-1
+
+    def resetValue(self, elem):
+        x,y = self.variableList[elem]
+        self.graph[x][y] = 0
 
 
 

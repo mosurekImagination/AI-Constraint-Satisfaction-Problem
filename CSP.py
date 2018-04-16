@@ -1,7 +1,10 @@
 from enum import Enum
 import numpy as np
 import time as tlib
+
+
 class CSP:
+    CHECKED = -1
 
     class VariableHeurestic(Enum):
         TAKE_FIRST = 1
@@ -95,9 +98,19 @@ class CSP:
                         self.getNextFromDomain(accElem)
                         self.deleteFromNeighbourDomains(accElem)
                 else:
-                    print("Koniec domeny")
-                    print(self.graph)
-                    accElem-=1
+                    if( not self.isLastInDomain(accElem) and not self.getValueElem(CSP.CHECKED)):
+                        print("Koniec domeny")
+                        print(self.graph)
+                        #accElem-=1
+                        self.restoreFromNeighbourDomain(accElem)
+                        self.getNextFromDomain(accElem)
+                    else:
+                        print("Ostatni w domenie:", accElem)
+                        print(self.graph)
+                        self.restoreFromNeighbourDomain(accElem)
+                        self.resetValue(accElem)
+                        accElem-=1
+                        self.getNextFromDomain(accElem)
 
         self.endTime = tlib.time()
 
@@ -112,6 +125,7 @@ class CSP:
         for i in range(0, len(self.domainList)-1):
             for j in range(0, len(self.domainList)-1):
                 if len(self.domainList[i][j]) == 0:
+                    print(" Pusta Domena dla:",i,",",j)
                     return False
         return notEmpty
 
@@ -133,6 +147,16 @@ class CSP:
 
     def getNextFromDomain(self, elem):
         return
+
+    def restoreFromNeighbourDomain(self, elem):
+        return
+
+    def isLastInDomain(self, accElem):
+        pass
+
+    def resetValue(self, accElem):
+        pass
+
 
 
 
