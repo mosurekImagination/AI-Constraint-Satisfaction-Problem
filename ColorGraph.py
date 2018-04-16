@@ -93,12 +93,6 @@ class ColorGraph(CSP):
         correct = self.checkMinOdds(x-1, y+1, value) and self.checkMinOdds(x+1, y-1, value)
         if not correct:
             return False
-        # correct = self.checkMinOdds(x-1, y-1, value) and self.checkMinOdds(x-1, y+1, value)
-        # if not correct:
-        #     return False
-        # correct = self.checkMinOdds(x+1, y-1, value) and self.checkMinOdds(x+1, y+1, value)
-        # if not correct:
-        #     return False
 
         return correct
 
@@ -109,7 +103,7 @@ class ColorGraph(CSP):
             self.domainList = np.zeros((self.size, self.size), dtype=object)
             for i in range(0, self.size):
                 for j in range (0,self.size):
-                    self.domainList[i][j] = (np.arange(1, self.domain))
+                    self.domainList[i][j] = (np.arange(1, self.domain+1))
 
     def resetDomain(self,x,y,value):
         if (x >= 0 and y >= 0 and x < self.size and y < self.size):
@@ -126,12 +120,57 @@ class ColorGraph(CSP):
         self.resetDomain(x-1,y+1)
         self.resetDomain(x-1,y-1)
 
-    def deleteBannedValues(self, x,y):
+
+    def deleteFromNeighbourDomains(self, elem):
+        elem = self.variableList[elem]
+        x = elem[0]
+        y = elem[1]
         value = self.graph[x][y]
+
+        ## Bezposredni Sasiedzi
+        self.deleteBannedValue(x-1, y, (value, value+1, value-1))
+        self.deleteBannedValue(x+1, y, (value, value+1, value-1))
+        self.deleteBannedValue(x, y-1, (value, value+1, value-1))
+        self.deleteBannedValue(x, y+1, (value, value+1, value-1))
+
+        #Skos
+        self.deleteBannedValue(x+1, y+1, (value,))
+        self.deleteBannedValue(x-1, y+1, (value,))
+        self.deleteBannedValue(x+1, y-1, (value,))
+        self.deleteBannedValue(x-1, y-1, (value,))
+
 
     def deleteBannedValue(self,x,y,value):
         if (x >= 0 and y >= 0 and x < self.size and y < self.size):
-            self.domainList[x][y].remove(value)
+            for i in range (0,len(value)):
+                #print(x,"y:",y)
+                #print(value[i])
+                #print(self.domainList[x][y])
+                if(x == 1 and y == 1):
+                    a = 5
+                index = np.where(self.domainList[x][y]==value[i])[0]
+                if (len(index) != 0):
+                    self.domainList[x][y] = np.delete(self.domainList[x][y],index[0])
+                   # print("Po usunieciu", self.domainList[x][y])
+
+
+    def addDomainValue(self, elem, value):
+        x = elem[0]
+        y = elem[1]
+        self.getDomain(elem).push(value)
+
+    def getNextFromDomain(self, elem):
+        value = self.getValueElem(elem)
+        domain = self.getDomain(elem)
+        if (value == 0 ):
+            self.setElemValue(elem, domain[0])
+        index = np.nonzero(domain == self.getValueElem(elem))[0][0]
+        self.setElemValue(elem, domain[index])
+
+    def setElemValue(self, accElem, value):
+        elem = self.variableList[accElem]
+        self.graph[elem[0]][elem[1]] = value
+
 
 
 

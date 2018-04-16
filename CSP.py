@@ -77,8 +77,24 @@ class CSP:
 #####################################################
         if solveHeurestic == self.SolveHeurestic.FORWARD_TRACKING:
             self.initialiseDomains(solveHeurestic)
-            #while(accElem != -1):
-            #    if
+            self.getNextFromDomain(0)
+            while(accElem != -1):
+                print(self.graph)
+                if accElem == len(self.variableList):
+                    print("Znaleziono Rozwiazanie")
+                    print(self.graph)
+                    self.results.append(self.graph.copy())
+                    accElem -= 1
+                    self.getNextFromDomain(accElem)
+                    self.deleteFromNeighbourDomains(accElem)
+                    continue
+                if (self.checkDomainsNotEmpty()):
+                    accElem+=1
+                    if(accElem != len(self.variableList)):
+                        self.getNextFromDomain(accElem)
+                        self.deleteFromNeighbourDomains(accElem)
+                else:
+                    self.getNextFromDomain(accElem)
 
         self.endTime = tlib.time()
 
@@ -90,7 +106,7 @@ class CSP:
 
     def checkDomainsNotEmpty(self):
         notEmpty = True
-        for i in range(0, len(self.variableList)):
+        for i in range(0, len(self.domainList)-1):
             if len(self.domainList[i]) == 0:
                 return False
         return notEmpty
@@ -102,6 +118,16 @@ class CSP:
         self.domainList[x][y]
 
     def resetDomain(self,x,y):
+        return
+
+    def getDomain(self,accElem):
+        elem = self.variableList[accElem]
+        return self.domainList[elem[0]][elem[1]]
+
+    def deleteFromNeighbourDomains(self, elem):
+        return
+
+    def getNextFromDomain(self, elem):
         return
 
 
