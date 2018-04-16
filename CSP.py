@@ -92,13 +92,19 @@ class CSP:
                     self.getNextFromDomain(accElem)
                     self.deleteFromNeighbourDomains(accElem)
                     continue
-                if (self.checkDomainsNotEmpty()):
+                if (self.checkDomainsNotEmpty() and not self.getValueElem(accElem) == CSP.CHECKED):
                     accElem+=1
                     if(accElem != len(self.variableList)):
                         self.getNextFromDomain(accElem)
                         self.deleteFromNeighbourDomains(accElem)
                 else:
-                    if( not self.isLastInDomain(accElem) and not self.getValueElem(CSP.CHECKED)):
+                    if(self.getValueElem(accElem) == CSP.CHECKED):
+                        self.restoreFromNeighbourDomain(accElem)
+                        self.resetValue(accElem)
+                        accElem-=1
+                        print(self.graph)
+                        self.getNextFromDomain(accElem)
+                    if( not self.isLastInDomain(accElem) ):
                         print("Koniec domeny")
                         print(self.graph)
                         #accElem-=1

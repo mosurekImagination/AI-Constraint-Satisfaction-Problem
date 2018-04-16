@@ -10,7 +10,7 @@ class ColorGraph(CSP):
         self.domain = initDomainSize
         self.minOdds = minOdds
         self.results = []
-        self.bannedElems = np.zeros(self.size)
+        self.bannedElems = np.zeros(self.size * self.size, dtype=object)
 
     def generateVariableList(self, heurestic):
         list=[]
@@ -83,6 +83,8 @@ class ColorGraph(CSP):
             for i in range(0, self.size):
                 for j in range (0,self.size):
                     self.domainList[i][j] = (np.arange(1, self.domain+1))
+            for i in range(0, self.size* self.size):
+                    self.bannedElems[i] = np.arange(0)
 
     def resetDomain(self,x,y,value):
         if (x >= 0 and y >= 0 and x < self.size and y < self.size):
@@ -101,9 +103,9 @@ class ColorGraph(CSP):
 
 
     def deleteFromNeighbourDomains(self, elem):
-        elem = self.variableList[elem]
-        x = elem[0]
-        y = elem[1]
+        Accelem = self.variableList[elem]
+        x = Accelem[0]
+        y = Accelem[1]
         value = self.graph[x][y]
 
         ## Bezposredni Sasiedzi
@@ -130,7 +132,12 @@ class ColorGraph(CSP):
                 index = np.where(self.domainList[x][y]==value[i])[0]
                 if (len(index) != 0):
                     self.domainList[x][y] = np.delete(self.domainList[x][y],index[0])
+                    # print("Zbanowano:", x, " ", y)
+                    # print("Przez: ", elem)
+                    # print(" Wartosc:", value[i])
+                    self.bannedElems[elem] = np.append(self.bannedElems[elem], self.getElemByCords(x,y))
                    # print("Po usunieciu", self.domainList[x][y])
+
 
 
     def addDomainValue(self, elem, value):
@@ -140,7 +147,8 @@ class ColorGraph(CSP):
 
     def getNextFromDomain(self, elem):
         if(self.isLastInDomain(elem)):
-           self.setElemValue(elem, CSP.CHECKED)
+            self.restoreFromNeighbourDomain(elem)
+            self.setElemValue(elem, CSP.CHECKED)
 
         value = self.getValueElem(elem)
         domain = self.getDomain(elem)
@@ -163,22 +171,24 @@ class ColorGraph(CSP):
         value = self.graph[x][y]
 
         ## Bezposredni Sasiedzi
-        self.restoreBannedValue(x - 1, y, (value,))
-        self.restoreBannedValue(x + 1, y, (value,))
-        self.restoreBannedValue(x, y - 1, (value,))
-        self.restoreBannedValue(x, y + 1, (value,))
+        self.restoreBannedValue(x - 1, y, (value, value+1, value-1), elem)
+        self.restoreBannedValue(x + 1, y, (value, value+1, value-1), elem)
+        self.restoreBannedValue(x, y - 1, (value, value+1, value-1), elem)
+        self.restoreBannedValue(x, y + 1, (value, value+1, value-1), elem)
 
         # Skos
-        self.restoreBannedValue(x + 1, y + 1, (value,))
-        self.restoreBannedValue(x - 1, y + 1, (value,))
-        self.restoreBannedValue(x + 1, y - 1, (value,))
-        self.restoreBannedValue(x - 1, y - 1, (value,))
+        self.restoreBannedValue(x + 1, y + 1, (value,), elem)
+        self.restoreBannedValue(x - 1, y + 1, (value,), elem)
+        self.restoreBannedValue(x + 1, y - 1, (value,), elem)
+        self.restoreBannedValue(x - 1, y - 1, (value,), elem)
 
-    def restoreBannedValue(self, x, y, value):
+    def restoreBannedValue(self, x, y, value, elem):
         if (x >= 0 and y >= 0 and x < self.size and y < self.size):
             for i in range (0,len(value)):
-                self.domainList[x][y] = np.append(self.domainList[x][y],value[i])
-                self.che
+                index = np.where(self.bannedElems[elem] == self.getElemByCords(x,y))[0]
+                if (len(index) != 0):
+                    self.domainList[x][y] = np.append(self.domainList[x][y],value[i])
+                    self.bannedElems[elem] = np.delete(self.bannedElems[elem],index[0])
 
     def isLastInDomain(self, elem):
         value = self.getValueElem(elem)
@@ -188,6 +198,9 @@ class ColorGraph(CSP):
     def resetValue(self, elem):
         x,y = self.variableList[elem]
         self.graph[x][y] = 0
+
+    def getElemByCords(self, x, y):
+        return x*self.size+y
 
 
 
