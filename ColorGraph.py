@@ -173,17 +173,26 @@ class ColorGraph(CSP):
         x, y = self.variableList[elem]
         value = self.graph[x][y]
 
-        ## Bezposredni Sasiedzi
-        self.restoreBannedValue(x - 1, y, (value, value+1, value-1), elem)
-        self.restoreBannedValue(x + 1, y, (value, value+1, value-1), elem)
-        self.restoreBannedValue(x, y - 1, (value, value+1, value-1), elem)
-        self.restoreBannedValue(x, y + 1, (value, value+1, value-1), elem)
+        for i in range (0, int(len(self.bannedElems[elem])/2)):
 
-        # Skos
-        self.restoreBannedValue(x + 1, y + 1, (value,), elem)
-        self.restoreBannedValue(x - 1, y + 1, (value,), elem)
-        self.restoreBannedValue(x + 1, y - 1, (value,), elem)
-        self.restoreBannedValue(x - 1, y - 1, (value,), elem)
+            RestoreElem = -self.bannedElems[elem][0]
+            x, y = self.variableList[RestoreElem]
+            value = self.bannedElems[elem][1]
+            self.bannedElems[elem] = np.delete(self.bannedElems[elem], [0,1])
+
+            self.domainList[x][y] = np.append(self.domainList[x][y],value)
+
+        # ## Bezposredni Sasiedzi
+        # self.restoreBannedValue(x - 1, y, (value, value+1, value-1), elem)
+        # self.restoreBannedValue(x + 1, y, (value, value+1, value-1), elem)
+        # self.restoreBannedValue(x, y - 1, (value, value+1, value-1), elem)
+        # self.restoreBannedValue(x, y + 1, (value, value+1, value-1), elem)
+        #
+        # # Skos
+        # self.restoreBannedValue(x + 1, y + 1, (value,), elem)
+        # self.restoreBannedValue(x - 1, y + 1, (value,), elem)
+        # self.restoreBannedValue(x + 1, y - 1, (value,), elem)
+        # self.restoreBannedValue(x - 1, y - 1, (value,), elem)
 
     def restoreBannedValue(self, x, y, value, elem):
         if (x >= 0 and y >= 0 and x < self.size and y < self.size):

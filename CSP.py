@@ -102,17 +102,14 @@ class CSP:
                         self.restoreFromNeighbourDomain(accElem)
                         self.resetValue(accElem)
                         accElem-=1
-                        print(self.graph)
                         self.getNextFromDomain(accElem)
                     if( not self.isLastInDomain(accElem) ):
                         print("Koniec domeny")
-                        print(self.graph)
                         #accElem-=1
                         self.restoreFromNeighbourDomain(accElem)
                         self.getNextFromDomain(accElem)
                     else:
                         print("Ostatni w domenie:", accElem)
-                        print(self.graph)
                         self.restoreFromNeighbourDomain(accElem)
                         self.resetValue(accElem)
                         accElem-=1
