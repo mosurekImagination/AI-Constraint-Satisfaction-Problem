@@ -87,10 +87,10 @@ class ColorGraph(CSP):
             return False
 
         #sasiedzi skos
-        correct = self.checkMinOdds(x+1, y, value) and self.checkMinOdds(x-1, y, value)
+        correct = self.checkMinOdds(x+1, y+1, value) and self.checkMinOdds(x-1, y-1, value)
         if not correct:
             return False
-        correct = self.checkMinOdds(x, y+1, value) and self.checkMinOdds(x, y-1, value)
+        correct = self.checkMinOdds(x-1, y+1, value) and self.checkMinOdds(x+1, y-1, value)
         if not correct:
             return False
         # correct = self.checkMinOdds(x-1, y-1, value) and self.checkMinOdds(x-1, y+1, value)

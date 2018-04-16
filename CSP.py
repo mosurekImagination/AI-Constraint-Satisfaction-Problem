@@ -51,42 +51,35 @@ class CSP:
 
 #####################################################
         if solveHeurestic == self.SolveHeurestic.BACK_TRACKING:
-            foundSolution = False
-            while(accElem <= len(self.variableList)):
-                print(self.graph)
-                if accElem == -1 and not foundSolution:
-                    self.increaseDomain()
-                    accElem = 0
-                    break;
-                    #print("Domain raised to: {}".format(self.domain))
+            self.increaseElem(0)
+            while(accElem != -1):
+                #print(self.graph)
+                if accElem == len(self.variableList):
+                    print("Znaleziono Rozwiazanie")
+                    print(self.graph)
+                    self.results.append(self.graph.copy())
+                    accElem -= 1
+                    self.increaseElem(accElem)
                     continue
-                if self.getValueElem(accElem) > self.domain:
+                if self.getValueElem(accElem) == self.domain+1:
                     self.clearElem(accElem)
                     accElem-=1
-                    #print("Element cross Domain: ")
+                    self.increaseElem(accElem)
                     continue
-                self.increaseElem(accElem)
-                if self.checkConstraints(accElem) :
-                    if accElem == len(self.variableList)-1:
-                        self.results.append(self.graph.copy())
-                        if self.getValueElem(accElem-1) == self.domain+1:
-                            self.clearElem(accElem-1)
-                            accElem-=2
-                            continue
-                        print("Znaleziono Rozwiazanie:")
-                        print(self.graph)
-                        foundSolution = True
-                        self.increaseElem(accElem)
-                        continue
+                if self.checkConstraints(accElem):
                     accElem+=1
-                    continue
+                    if(accElem != len(self.variableList)):
+                        self.increaseElem(accElem)
+                else:
+                    self.increaseElem(accElem)
+
 
 #####################################################
         if solveHeurestic == self.SolveHeurestic.FORWARD_TRACKING:
             self.initialiseDomains(solveHeurestic)
-            while(accElem < len(self.variableList)):
-                self.domainList[0][0]
-                accElem+=1
+            #while(accElem != -1):
+            #    if
+
         self.endTime = tlib.time()
 
     def increaseDomain(self):
