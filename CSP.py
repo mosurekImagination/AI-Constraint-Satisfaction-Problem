@@ -128,8 +128,8 @@ class CSP:
 
     def checkDomainsNotEmpty(self):
         notEmpty = True
-        for i in range(0, len(self.domainList)-1):
-            for j in range(0, len(self.domainList)-1):
+        for i in range(0, len(self.domainList)):
+            for j in range(0, len(self.domainList)):
                 if len(self.domainList[i][j]) == 0:
                     print(" Pusta Domena dla:",i,",",j)
                     return False

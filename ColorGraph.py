@@ -84,7 +84,7 @@ class ColorGraph(CSP):
                 for j in range (0,self.size):
                     self.domainList[i][j] = (np.arange(1, self.domain+1))
             for i in range(0, self.size* self.size):
-                    self.bannedElems[i] = np.arange(0)
+                    self.bannedElems[i] = np.arange(0, dtype=(int))
 
     def resetDomain(self,x,y,value):
         if (x >= 0 and y >= 0 and x < self.size and y < self.size):
@@ -131,11 +131,14 @@ class ColorGraph(CSP):
                     a = 5
                 index = np.where(self.domainList[x][y]==value[i])[0]
                 if (len(index) != 0):
+                    if(elem == 3 and self.getElemByCords(x,y)==6):
+                        print("6 przez 3")
                     self.domainList[x][y] = np.delete(self.domainList[x][y],index[0])
                     # print("Zbanowano:", x, " ", y)
                     # print("Przez: ", elem)
                     # print(" Wartosc:", value[i])
-                    self.bannedElems[elem] = np.append(self.bannedElems[elem], self.getElemByCords(x,y))
+                    self.bannedElems[elem] = np.append(self.bannedElems[elem], (-self.getElemByCords(x,y), value[i]))
+                    print("Zbanowano elem: ", self.getElemByCords(x,y), " przez: ", elem, " wartosc: ", value[i])
                    # print("Po usunieciu", self.domainList[x][y])
 
 
@@ -185,10 +188,18 @@ class ColorGraph(CSP):
     def restoreBannedValue(self, x, y, value, elem):
         if (x >= 0 and y >= 0 and x < self.size and y < self.size):
             for i in range (0,len(value)):
-                index = np.where(self.bannedElems[elem] == self.getElemByCords(x,y))[0]
+                index = np.where(self.bannedElems[elem] == -self.getElemByCords(x,y))[0]
                 if (len(index) != 0):
-                    self.domainList[x][y] = np.append(self.domainList[x][y],value[i])
+                    print(self.graph)
+                    self.domainList[x][y] = np.append(self.domainList[x][y],self.bannedElems[elem][index+1])
                     self.bannedElems[elem] = np.delete(self.bannedElems[elem],index[0])
+                    self.bannedElems[elem] = np.delete(self.bannedElems[elem], index[0])
+                    if(self.getElemByCords(x,y) == 6):
+                        print("Elem 6")
+                    print("Przywrocono elem: ", self.getElemByCords(x,y), " przez: ", elem, " wartosc: ", value[i])
+                    if(len(self.domainList[x][y]) != len(set(self.domainList[x][y]))):
+                        print("Zduplikowano dziedzinę")
+                        a= 123
 
     def isLastInDomain(self, elem):
         value = self.getValueElem(elem)
