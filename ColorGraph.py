@@ -111,6 +111,8 @@ class ColorGraph(CSP):
 
 
     def deleteBannedValue(self,x,y,value, elem):
+        if(x == y == 0):
+            return
         if (x >= 0 and y >= 0 and x < self.size and y < self.size):
             for i in range (0,len(value)):
                 #print(x,"y:",y)
@@ -118,8 +120,6 @@ class ColorGraph(CSP):
                 #print(self.domainList[x][y])
                 index = np.where(self.domainList[x][y]==value[i])[0]
                 if (len(index) != 0):
-                    # if (x == y == 0):
-                    #     pass
                     self.domainList[x][y] = np.delete(self.domainList[x][y],index[0])
                     # print("Zbanowano:", x, " ", y)
                     # print("Przez: ", elem)
@@ -135,8 +135,10 @@ class ColorGraph(CSP):
         y = elem[1]
         self.getDomain(elem).push(value)
 
-    def getNextFromDomain(self, elem):
-        if(self.isLastInDomain(elem)):
+    def getNextFromDomain(self, elem, back = False):
+        if(back):
+            back = self.getValueElem(elem) == self.domain
+        if(self.isLastInDomain(elem) or back):
             self.restoreFromNeighbourDomain(elem)
             self.setElemValue(elem, CSP.CHECKED)
             self.deleteFromNeighbourDomains(elem)
@@ -145,9 +147,8 @@ class ColorGraph(CSP):
         domain = self.getDomain(elem)
         if (value == 0 ):
             self.setElemValue(elem, domain[0])
-        if (len(domain) == 0):
-            test = 1
-
+            return
+        #self.domain=np.ndarray.sort(self.domain)
         index = np.where(domain == value)[0]
         if (len(index) != 0):
         #index = np.nonzero(domain == self.getValueElem(elem))[0][0]
@@ -167,20 +168,8 @@ class ColorGraph(CSP):
             x, y = self.variableList[RestoreElem]
             value = self.bannedElems[elem][1]
             self.bannedElems[elem] = np.delete(self.bannedElems[elem], [0,1])
-
             self.domainList[x][y] = np.append(self.domainList[x][y],value)
-
-        # ## Bezposredni Sasiedzi
-        # self.restoreBannedValue(x - 1, y, (value, value+1, value-1), elem)
-        # self.restoreBannedValue(x + 1, y, (value, value+1, value-1), elem)
-        # self.restoreBannedValue(x, y - 1, (value, value+1, value-1), elem)
-        # self.restoreBannedValue(x, y + 1, (value, value+1, value-1), elem)
-        #
-        # # Skos
-        # self.restoreBannedValue(x + 1, y + 1, (value,), elem)
-        # self.restoreBannedValue(x - 1, y + 1, (value,), elem)
-        # self.restoreBannedValue(x + 1, y - 1, (value,), elem)
-        # self.restoreBannedValue(x - 1, y - 1, (value,), elem)
+            self.sortDomain(x,y)
 
     def restoreBannedValue(self, x, y, value, elem):
         if (x >= 0 and y >= 0 and x < self.size and y < self.size):
@@ -209,6 +198,9 @@ class ColorGraph(CSP):
 
     def getElemByCords(self, x, y):
         return x*self.size+y
+
+    def sortDomain(self,x,y):
+        self.domainList[x][y]=np.sort(self.domainList[x][y])
 
 
 

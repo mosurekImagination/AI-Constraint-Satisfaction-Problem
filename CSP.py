@@ -56,7 +56,7 @@ class CSP:
         if solveHeurestic == self.SolveHeurestic.BACK_TRACKING:
             self.increaseElem(0)
             while(accElem != -1):
-                #print(self.graph)
+                print(self.graph)
                 if accElem == len(self.variableList):
                     print("Znaleziono Rozwiazanie")
                     print(self.graph)
@@ -104,18 +104,21 @@ class CSP:
                         accElem-=1
                         self.getNextFromDomain(accElem)
                         self.deleteFromNeighbourDomains(accElem)
-                    if( not self.isLastInDomain(accElem) ):
+                    elif( not self.isLastInDomain(accElem) ):
                         print("Koniec domeny")
                         #accElem-=1
+                        if(self.getValueElem(0) == self.domain):
+                            break;
                         self.restoreFromNeighbourDomain(accElem)
                         self.getNextFromDomain(accElem)
                         self.deleteFromNeighbourDomains(accElem)
                     else:
                         print("Ostatni w domenie:", accElem)
+                        self.restoreFromNeighbourDomain(accElem-1)
                         self.restoreFromNeighbourDomain(accElem)
+                        self.getNextFromDomain(accElem-1, back=True)
                         self.resetValue(accElem)
                         accElem-=1
-                        self.getNextFromDomain(accElem)
                         self.deleteFromNeighbourDomains(accElem)
 
         self.endTime = tlib.time()
@@ -162,6 +165,7 @@ class CSP:
 
     def resetValue(self, accElem):
         pass
+
 
 
 
