@@ -59,7 +59,6 @@ class CSP:
                 print(self.graph)
                 if accElem == len(self.variableList):
                     print("Znaleziono Rozwiazanie")
-                    print(self.graph)
                     self.results.append(self.graph.copy())
                     accElem -= 1
                     self.increaseElem(accElem)
@@ -85,9 +84,8 @@ class CSP:
             while(accElem != -1):
                 print(self.graph)
                 if accElem == len(self.variableList):
-                    print("Znaleziono Rozwiazanie")
-                    print(self.graph)
                     self.results.append(self.graph.copy())
+                    print("Znaleziono Rozwiazanie")
                     accElem -= 1
                     self.getNextFromDomain(accElem)
                     self.deleteFromNeighbourDomains(accElem)
@@ -102,18 +100,16 @@ class CSP:
                         self.restoreFromNeighbourDomain(accElem)
                         self.resetValue(accElem)
                         accElem-=1
+                        self.restoreFromNeighbourDomain(accElem)
                         self.getNextFromDomain(accElem)
                         self.deleteFromNeighbourDomains(accElem)
                     elif( not self.isLastInDomain(accElem) ):
-                        print("Koniec domeny")
-                        #accElem-=1
                         if(self.getValueElem(0) == self.domain):
                             break;
                         self.restoreFromNeighbourDomain(accElem)
                         self.getNextFromDomain(accElem)
                         self.deleteFromNeighbourDomains(accElem)
                     else:
-                        print("Ostatni w domenie:", accElem)
                         self.restoreFromNeighbourDomain(accElem-1)
                         self.restoreFromNeighbourDomain(accElem)
                         self.getNextFromDomain(accElem-1, back=True)
@@ -134,7 +130,6 @@ class CSP:
         for i in range(0, len(self.domainList)):
             for j in range(0, len(self.domainList)):
                 if len(self.domainList[i][j]) == 0:
-                    print(" Pusta Domena dla:",i,",",j)
                     return False
         return notEmpty
 
