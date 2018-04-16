@@ -90,17 +90,6 @@ class ColorGraph(CSP):
         if (x >= 0 and y >= 0 and x < self.size and y < self.size):
             self.domainList[x][y] =(np.arange(1, self.domain))
 
-    def resetNeighbourDomain(self, x,y):
-        self.graph[x][y]=0
-        self.resetDomain(x+1,y+1,value)
-        self.resetDomain(x+1,y-1)
-        self.resetDomain(x,y+1)
-        self.resetDomain(x,y-1)
-        self.resetDomain(x+1,y)
-        self.resetDomain(x-1,y)
-        self.resetDomain(x-1,y+1)
-        self.resetDomain(x-1,y-1)
-
 
     def deleteFromNeighbourDomains(self, elem):
         Accelem = self.variableList[elem]
@@ -127,18 +116,16 @@ class ColorGraph(CSP):
                 #print(x,"y:",y)
                 #print(value[i])
                 #print(self.domainList[x][y])
-                if(x == 1 and y == 1):
-                    a = 5
                 index = np.where(self.domainList[x][y]==value[i])[0]
                 if (len(index) != 0):
-                    if(elem == 3 and self.getElemByCords(x,y)==6):
-                        print("6 przez 3")
+                    # if (x == y == 0):
+                    #     pass
                     self.domainList[x][y] = np.delete(self.domainList[x][y],index[0])
                     # print("Zbanowano:", x, " ", y)
                     # print("Przez: ", elem)
                     # print(" Wartosc:", value[i])
                     self.bannedElems[elem] = np.append(self.bannedElems[elem], (-self.getElemByCords(x,y), value[i]))
-                    print("Zbanowano elem: ", self.getElemByCords(x,y), " przez: ", elem, " wartosc: ", value[i])
+                    #print("Zbanowano elem: ", self.getElemByCords(x,y), " przez: ", elem, " wartosc: ", value[i])
                    # print("Po usunieciu", self.domainList[x][y])
 
 
@@ -152,6 +139,7 @@ class ColorGraph(CSP):
         if(self.isLastInDomain(elem)):
             self.restoreFromNeighbourDomain(elem)
             self.setElemValue(elem, CSP.CHECKED)
+            self.deleteFromNeighbourDomains(elem)
 
         value = self.getValueElem(elem)
         domain = self.getDomain(elem)

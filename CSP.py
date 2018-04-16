@@ -103,17 +103,20 @@ class CSP:
                         self.resetValue(accElem)
                         accElem-=1
                         self.getNextFromDomain(accElem)
+                        self.deleteFromNeighbourDomains(accElem)
                     if( not self.isLastInDomain(accElem) ):
                         print("Koniec domeny")
                         #accElem-=1
                         self.restoreFromNeighbourDomain(accElem)
                         self.getNextFromDomain(accElem)
+                        self.deleteFromNeighbourDomains(accElem)
                     else:
                         print("Ostatni w domenie:", accElem)
                         self.restoreFromNeighbourDomain(accElem)
                         self.resetValue(accElem)
                         accElem-=1
                         self.getNextFromDomain(accElem)
+                        self.deleteFromNeighbourDomains(accElem)
 
         self.endTime = tlib.time()
 
