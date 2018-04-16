@@ -56,9 +56,9 @@ class CSP:
         if solveHeurestic == self.SolveHeurestic.BACK_TRACKING:
             self.increaseElem(0)
             while(accElem != -1):
-                print(self.graph)
                 if accElem == len(self.variableList):
                     print("Znaleziono Rozwiazanie")
+                    print(self.graph)
                     self.results.append(self.graph.copy())
                     accElem -= 1
                     self.increaseElem(accElem)
@@ -82,21 +82,25 @@ class CSP:
             self.getNextFromDomain(0)
             self.deleteFromNeighbourDomains(0)
             while(accElem != -1):
-                print(self.graph)
+                #print(self.graph)
                 if accElem == len(self.variableList):
                     self.results.append(self.graph.copy())
                     print("Znaleziono Rozwiazanie")
                     accElem -= 1
+                    self.restoreFromNeighbourDomain(accElem)
                     self.getNextFromDomain(accElem)
                     self.deleteFromNeighbourDomains(accElem)
                     continue
                 if (self.checkDomainsNotEmpty() and not self.getValueElem(accElem) == CSP.CHECKED):
                     accElem+=1
                     if(accElem != len(self.variableList)):
+                        self.restoreFromNeighbourDomain(accElem)
                         self.getNextFromDomain(accElem)
                         self.deleteFromNeighbourDomains(accElem)
                 else:
                     if(self.getValueElem(accElem) == CSP.CHECKED):
+                        if (accElem == 0):
+                            break;
                         self.restoreFromNeighbourDomain(accElem)
                         self.resetValue(accElem)
                         accElem-=1
@@ -104,8 +108,6 @@ class CSP:
                         self.getNextFromDomain(accElem)
                         self.deleteFromNeighbourDomains(accElem)
                     elif( not self.isLastInDomain(accElem) ):
-                        if(self.getValueElem(0) == self.domain):
-                            break;
                         self.restoreFromNeighbourDomain(accElem)
                         self.getNextFromDomain(accElem)
                         self.deleteFromNeighbourDomains(accElem)
@@ -135,9 +137,6 @@ class CSP:
 
     def getExecutionTime(self):
         return self.endTime-self.startTime
-
-    def resetNeighbourDomain(self, x,y):
-        self.domainList[x][y]
 
     def resetDomain(self,x,y):
         return
