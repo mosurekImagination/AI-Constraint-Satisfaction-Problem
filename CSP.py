@@ -19,6 +19,8 @@ class CSP:
         self.variableList = []
         self.domain = 0
         self.domainList = []
+        self.results = []
+        self.graph=[]
         return
 
     def checkConstraints(self, elem):
@@ -46,11 +48,16 @@ class CSP:
 
         self.variableList = self.generateVariableList(variableHeurestic)
         accElem = 0
+
+#####################################################
         if solveHeurestic == self.SolveHeurestic.BACK_TRACKING:
-            while(accElem < len(self.variableList)):
-                if accElem == -1:
+            foundSolution = False
+            while(accElem <= len(self.variableList)):
+                print(self.graph)
+                if accElem == -1 and not foundSolution:
                     self.increaseDomain()
                     accElem = 0
+                    break;
                     #print("Domain raised to: {}".format(self.domain))
                     continue
                 if self.getValueElem(accElem) > self.domain:
@@ -58,15 +65,27 @@ class CSP:
                     accElem-=1
                     #print("Element cross Domain: ")
                     continue
-
                 self.increaseElem(accElem)
                 if self.checkConstraints(accElem) :
+                    if accElem == len(self.variableList)-1:
+                        self.results.append(self.graph.copy())
+                        if self.getValueElem(accElem-1) == self.domain+1:
+                            self.clearElem(accElem-1)
+                            accElem-=2
+                            continue
+                        print("Znaleziono Rozwiazanie:")
+                        print(self.graph)
+                        foundSolution = True
+                        self.increaseElem(accElem)
+                        continue
                     accElem+=1
                     continue
+
+#####################################################
         if solveHeurestic == self.SolveHeurestic.FORWARD_TRACKING:
             self.initialiseDomains(solveHeurestic)
             while(accElem < len(self.variableList)):
-
+                self.domainList[0][0]
                 accElem+=1
         self.endTime = tlib.time()
 
@@ -85,5 +104,13 @@ class CSP:
 
     def getExecutionTime(self):
         return self.endTime-self.startTime
+
+    def resetNeighbourDomain(self, x,y):
+        self.domainList[x][y]
+
+    def resetDomain(self,x,y):
+        return
+
+
 
 

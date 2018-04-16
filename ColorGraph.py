@@ -4,11 +4,12 @@ import numpy as np
 
 class ColorGraph(CSP):
 
-    def __init__(self, size, initDomainSize = 1, minOdds = 2):
+    def __init__(self, size, initDomainSize = 1, minOdds = 1):
         self.size = size
         self.graph = np.zeros((self.size, self.size), dtype=int)
         self.domain = initDomainSize
         self.minOdds = minOdds
+        self.results = []
 
     def generateVariableList(self, heurestic):
         list=[]
@@ -77,24 +78,27 @@ class ColorGraph(CSP):
             return True
 
     def checkNeighbour(self, x, y, value):
-        correct = self.checkNotEqual(x-1, y, value) and self.checkNotEqual(x+1, y, value)
+        ##sasiedzi gora dol
+        correct = self.checkMinOdds(x-1, y, value, 2) and self.checkMinOdds(x+1, y, value, 2)
         if not correct:
             return False
-        correct = self.checkNotEqual(x, y-1, value) and self.checkNotEqual(x, y+1, value)
+        correct = self.checkMinOdds(x, y-1, value, 2) and self.checkMinOdds(x, y+1, value, 2)
         if not correct:
             return False
-        correct = self.checkMinOdds(x+2, y, value) and self.checkMinOdds(x-2, y, value)
+
+        #sasiedzi skos
+        correct = self.checkMinOdds(x+1, y, value) and self.checkMinOdds(x-1, y, value)
         if not correct:
             return False
-        correct = self.checkMinOdds(x, y+2, value) and self.checkMinOdds(x, y-2, value)
+        correct = self.checkMinOdds(x, y+1, value) and self.checkMinOdds(x, y-1, value)
         if not correct:
             return False
-        correct = self.checkMinOdds(x-1, y-1, value) and self.checkMinOdds(x-1, y+1, value)
-        if not correct:
-            return False
-        correct = self.checkMinOdds(x+1, y-1, value) and self.checkMinOdds(x+1, y+1, value)
-        if not correct:
-            return False
+        # correct = self.checkMinOdds(x-1, y-1, value) and self.checkMinOdds(x-1, y+1, value)
+        # if not correct:
+        #     return False
+        # correct = self.checkMinOdds(x+1, y-1, value) and self.checkMinOdds(x+1, y+1, value)
+        # if not correct:
+        #     return False
 
         return correct
 
@@ -102,11 +106,33 @@ class ColorGraph(CSP):
         if heurestic == self.SolveHeurestic.BACK_TRACKING:
             self.domain = 0
         if heurestic == self.SolveHeurestic.FORWARD_TRACKING:
-            self.domainList = np.range(self.size)
+            self.domainList = np.zeros((self.size, self.size), dtype=object)
             for i in range(0, self.size):
-                self.domainList[i] = np.range(self.size)
                 for j in range (0,self.size):
                     self.domainList[i][j] = (np.arange(1, self.domain))
+
+    def resetDomain(self,x,y,value):
+        if (x >= 0 and y >= 0 and x < self.size and y < self.size):
+            self.domainList[x][y] =(np.arange(1, self.domain))
+
+    def resetNeighbourDomain(self, x,y):
+        self.graph[x][y]=0
+        self.resetDomain(x+1,y+1,value)
+        self.resetDomain(x+1,y-1)
+        self.resetDomain(x,y+1)
+        self.resetDomain(x,y-1)
+        self.resetDomain(x+1,y)
+        self.resetDomain(x-1,y)
+        self.resetDomain(x-1,y+1)
+        self.resetDomain(x-1,y-1)
+
+    def deleteBannedValues(self, x,y):
+        value = self.graph[x][y]
+
+    def deleteBannedValue(self,x,y,value):
+        if (x >= 0 and y >= 0 and x < self.size and y < self.size):
+            self.domainList[x][y].remove(value)
+
 
 
 
